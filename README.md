@@ -15,7 +15,7 @@ Supported endpoints
   * Trains
   * Trams
   * Ships
-  
+
 #### Example
 ```
 $ curl  'http://localhost:5000/realtimedeparturesV4?stationId=9326&apiKey=SECRETKEY&transportMode=Metros&destinationFilter=Kungs'
