@@ -1,0 +1,51 @@
+#!/usr/bin/env python3
+
+from feedgen.feed import FeedGenerator
+from flask import Flask, make_response, request
+import json
+import re
+import requests
+
+app = Flask(__name__)
+
+@app.route('/realtimedeparturesV4')
+def index():
+
+    apiKey = request.args.get('apiKey')
+    destinationFilter = request.args.get('destinationFilter')
+    stationId = request.args.get('stationId')
+    transportMode = request.args.get('transportMode')
+
+    API_BASE_URL = 'https://api.sl.se/api2/realtimedeparturesV4.json'
+    url = API_BASE_URL + "?key=" + apiKey + "&siteid=" + str(stationId)
+
+    res = requests.get(url)
+    if res.status_code == 200:
+        result = res.json()
+    else:
+        raise Error('Error: ' + str(res.status_code) +  str(res.content))
+
+    fg = FeedGenerator()
+    fg.title("realtimedeparturesV4 " + stationId + " (" + transportMode + ")")
+    fg.link(href='https://github.com/theseal/SL-API-to-RSS')
+    fg.description('realtimedeparturesV4 to RSS.')
+
+    for entry in reversed(result['ResponseData'][transportMode]):
+        destination = entry['Destination']
+        displayTime = entry['DisplayTime']
+        if destinationFilter:
+            pattern = "^(" + destinationFilter + ")"
+            if re.match(pattern, destination, re.IGNORECASE):
+                fe = fg.add_entry()
+                fe.title(destination + " " + displayTime)
+        else:
+            fe = fg.add_entry()
+            fe.title(destination + " " + displayTime)
+
+    rssfeed  = fg.rss_str(pretty=True)
+    response = make_response(rssfeed)
+    response.headers['Content-Type'] = 'text/xml; charset=utf-8'
+    return response
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0')
