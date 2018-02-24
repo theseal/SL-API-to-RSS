@@ -36,6 +36,6 @@ $ curl  'http://localhost:5000/realtimedeparturesV4?stationId=9326&apiKey=SECRET
     </item>
   </channel>
 </rss>
-
+```
 
 Patches are welcome!
