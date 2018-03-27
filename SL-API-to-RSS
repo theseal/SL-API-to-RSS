@@ -6,6 +6,9 @@ import json
 import re
 import requests
 
+import os
+import datetime
+
 app = Flask(__name__)
 
 @app.route('/realtimedeparturesV4')
@@ -15,6 +18,27 @@ def index():
     destinationFilter = request.args.get('destinationFilter')
     stationId = request.args.get('stationId')
     transportMode = request.args.get('transportMode')
+
+    if not apiKey:
+        today = datetime.datetime.today().weekday()
+        selector = None
+
+        if today == 0:
+            selector = "MONDAY"
+        elif today == 1:
+            selector = "TUESDAY"
+        elif today == 2:
+            selector = "WEDNESDAY"
+        elif today == 3:
+            selector = "THURSDAY"
+        elif today == 4:
+            selector = "FRIDAY"
+        elif today == 5:
+            selector = "SATURDAY"
+        elif today == 6:
+            selector = "SUNDAY"
+        apiKey = os.environ.get(selector)
+
 
     API_BASE_URL = 'https://api.sl.se/api2/realtimedeparturesV4.json'
     url = API_BASE_URL + "?key=" + apiKey + "&siteid=" + str(stationId)
