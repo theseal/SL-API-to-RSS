@@ -11,5 +11,5 @@ MarkupSafe==1.0
 python-dateutil==2.6.1
 requests==2.31.0
 six==1.11.0
+Werkzeug==3.0.3
 urllib3==1.26.18
-Werkzeug==2.2.3
